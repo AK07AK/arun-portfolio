@@ -5,8 +5,15 @@ window.addEventListener('scroll',()=>{
 });
 const observer=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
-},{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+},{threshold:.1,rootMargin:'0px 0px -5% 0px'});
+document.querySelectorAll('.reveal').forEach(el=>{
+  observer.observe(el);
+  // Elements already on screen at load (e.g. above the fold, or tall
+  // cards like the experience section) should be visible immediately
+  // rather than waiting on a scroll event that may never come.
+  const r=el.getBoundingClientRect();
+  if(r.top<window.innerHeight&&r.bottom>0)el.classList.add('visible');
+});
 
 // Highlight the nav link for the section currently in view
 const navLinks=document.querySelectorAll('.navbar nav a');
