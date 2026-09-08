@@ -1,11 +1,37 @@
-const bar=document.getElementById('bar');
-window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;bar.style.width=(scrollY/h*100)+'%'});
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
-document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
-const c=document.querySelector('.cursor'),c2=document.querySelector('.cursor2');
-window.addEventListener('mousemove',e=>{c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';c2.style.left=e.clientX+'px';c2.style.top=e.clientY+'px'});
-document.querySelectorAll('a').forEach(a=>a.addEventListener('mouseenter',()=>c2.style.transform='translate(-50%,-50%) scale(1.8)'));
-document.querySelectorAll('a').forEach(a=>a.addEventListener('mouseleave',()=>c2.style.transform='translate(-50%,-50%) scale(1)'));
-const menu=document.getElementById('menu'),nav=document.querySelector('nav');
-menu.onclick=()=>{nav.style.display=nav.style.display==='flex'?'none':'flex';nav.style.position='absolute';nav.style.top='74px';nav.style.left='0';nav.style.right='0';nav.style.padding='24px 7vw';nav.style.flexDirection='column';nav.style.background='#070c15';nav.style.borderBottom='1px solid #1b2a3d'};
-nav.querySelectorAll('a').forEach(a=>a.onclick=()=>nav.style.display='none');
+const progress=document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  progress.style.width=(window.scrollY/h*100)+'%';
+});
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Highlight the nav link for the section currently in view
+const navLinks=document.querySelectorAll('.navbar nav a');
+const linkFor=id=>[...navLinks].find(a=>a.getAttribute('href')===`#${id}`);
+const navObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    const link=linkFor(entry.target.id);
+    if(!link)return;
+    if(entry.isIntersecting)navLinks.forEach(a=>a.classList.toggle('active',a===link));
+  });
+},{rootMargin:'-45% 0px -50% 0px',threshold:0});
+document.querySelectorAll('main section[id]').forEach(sec=>navObserver.observe(sec));
+
+const menu=document.getElementById('menu');
+const nav=document.querySelector('.navbar nav');
+menu?.addEventListener('click',()=>{
+  const open=nav.style.display==='flex';
+  nav.style.display=open?'none':'flex';
+  nav.style.position='absolute';
+  nav.style.top='76px';
+  nav.style.left='0';
+  nav.style.right='0';
+  nav.style.padding='22px 6vw';
+  nav.style.flexDirection='column';
+  nav.style.background='white';
+  nav.style.borderBottom='1px solid #dfe8f5';
+});
+document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>nav.style.display='none'));
